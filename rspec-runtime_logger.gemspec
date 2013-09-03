@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Rspec::RuntimeLogger::VERSION
   spec.authors       = ["Kenta Murata"]
   spec.email         = ["mrkn@cookpad.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{A formatter that records running times of spec files}
+  spec.summary       = %q{A formatter that records running times of spec files}
+  spec.homepage      = "https://github.com/mrkn/rspec-runntime_logger"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
