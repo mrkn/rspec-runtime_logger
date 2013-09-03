@@ -1,4 +1,4 @@
-# Rspec::RuntimeLogger
+# Rspec::RuntimeLogger [![Code Climate](https://codeclimate.com/github/mrkn/rspec-runtime_logger.png)](https://codeclimate.com/github/mrkn/rspec-runtime_logger)
 
 TODO: Write a gem description
 
