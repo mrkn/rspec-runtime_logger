@@ -3,6 +3,16 @@ require "rspec/core/formatters/base_formatter"
 
 module RSpec
   module RuntimeLogger
+    @max_record_count = 20
+
+    def self.max_record_count
+      @max_record_count
+    end
+
+    def self.max_record_count=(value)
+      @max_record_count = value
+    end
+
     class Formatter < RSpec::Core::Formatters::BaseFormatter
       DEFAULT_FILENAME = 'spec_runtime_log.tsv'.freeze
 
@@ -14,6 +24,10 @@ module RSpec
           @filename = DEFAULT_FILENAME
         end
         super
+      end
+
+      def max_record_count
+        RuntimeLogger.max_record_count
       end
 
       def start(*args)
@@ -45,7 +59,8 @@ module RSpec
       def start_dump
         File.open(@filename, 'wb') do |io|
           @runtimes.keys.sort.each do |filename|
-            io.puts [filename, *@runtimes[filename]].join("\t")
+            runtimes = @runtimes[filename].take(max_record_count)
+            io.puts [filename, *runtimes].join("\t")
           end
         end
       end
