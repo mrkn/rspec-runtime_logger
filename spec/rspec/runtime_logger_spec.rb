@@ -51,6 +51,28 @@ describe RSpec::RuntimeLogger::Formatter do
     expect(log).to eq("a_spec.rb\t60000\nb_spec.rb\t40000\n")
   end
 
+  context 'when two toplevel example groups are in a spec file' do
+    it 'adds runtimes of these example groups' do
+      Timecop.freeze(Time.local(2000, 1, 1, 12, 00, 00)) do
+        formatter.example_group_started(double(:example_group_a, file_path: 'a_spec.rb', top_level?: true))
+      end
+      Timecop.freeze(Time.local(2000, 1, 1, 12, 01, 00)) do
+        formatter.example_group_finished(double(:example_group_a, file_path: 'a_spec.rb', top_level?: true))
+      end
+
+      Timecop.freeze(Time.local(2000, 1, 1, 12, 00, 00)) do
+        formatter.example_group_started(double(:example_group_a, file_path: 'a_spec.rb', top_level?: true))
+      end
+      Timecop.freeze(Time.local(2000, 1, 1, 12, 00, 40)) do
+        formatter.example_group_finished(double(:example_group_a, file_path: 'a_spec.rb', top_level?: true))
+      end
+
+      formatter.start_dump
+      log = File.read("spec_runtime_log.tsv")
+      expect(log).to eq("a_spec.rb\t100000\n")
+    end
+  end
+
   context 'when old runtime log is exist' do
     before do
       File.write('spec_runtime_log.tsv', "a_spec.rb\t30000\n")

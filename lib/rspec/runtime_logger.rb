@@ -33,7 +33,8 @@ module RSpec
       def start(*args)
         super
         @runtimes = {}
-        @runtime_count = 0
+        @existing_runtimes = {}
+        @existing_runtime_count = 0
         load_existing_runtime_log
       end
 
@@ -51,20 +52,21 @@ module RSpec
           runtime = Time.now - @toplevel_example_group_started_at
           @toplevel_example_group_started_at = nil
 
-          @runtimes[file_path] = Array.new(@runtime_count, 'na') unless @runtimes[file_path]
-          @runtimes[file_path].unshift (runtime * 1_000).to_i # msec
+          @runtimes[file_path] ||= 0
+          @runtimes[file_path] += (runtime * 1_000).to_i # msec
         end
       end
 
       def start_dump
         File.open(@filename, 'wb') do |io|
-          @runtimes.keys.sort.each do |filename|
-            runtimes = @runtimes[filename]
-            runtimes.unshift 'na' if runtimes.size == @runtime_count
-            runtimes = runtimes.take(max_record_count)
-            next if runtimes.all? {|runtime| runtime == 'na' }
+          (@runtimes.keys | @existing_runtimes.keys).sort.each do |filename|
+            runtime = @runtimes[filename]
 
-            io.puts [filename, *runtimes.take(max_record_count)].join("\t")
+            existing_runtimes = @existing_runtimes[filename] || Array.new(@existing_runtime_count, 'na')
+            existing_runtimes = existing_runtimes.take(max_record_count - 1)
+            next if runtime.nil? && existing_runtimes.all? {|rt| rt == 'na' }
+
+            io.puts [filename, runtime || 'na', *existing_runtimes].join("\t")
           end
         end
       end
@@ -76,11 +78,11 @@ module RSpec
 
         File.read(@filename, mode: 'rb').each_line do |line|
           filename, *runtimes = line.strip.split(/\t/)
-          @runtimes[filename] = runtimes.map do |runtime|
+          @existing_runtimes[filename] = runtimes.map do |runtime|
             runtime == 'na' ? 'na' : runtime.to_i
           end
         end
-        @runtime_count = @runtimes.each_value.first.size
+        @existing_runtime_count = @existing_runtimes.each_value.first.size
       end
     end
   end
