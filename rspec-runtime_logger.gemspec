@@ -5,7 +5,7 @@ require 'rspec/runtime_logger/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "rspec-runtime_logger"
-  spec.version       = Rspec::RuntimeLogger::VERSION
+  spec.version       = RSpec::RuntimeLogger::VERSION
   spec.authors       = ["Kenta Murata"]
   spec.email         = ["mrkn@cookpad.com"]
   spec.description   = %q{A formatter that records running times of spec files}

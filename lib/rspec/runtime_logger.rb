@@ -1,6 +1,6 @@
 require "rspec/runtime_logger/version"
 
-module Rspec
+module RSpec
   module RuntimeLogger
     # Your code goes here...
   end
