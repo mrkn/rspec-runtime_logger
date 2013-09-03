@@ -52,15 +52,19 @@ module RSpec
           @toplevel_example_group_started_at = nil
 
           @runtimes[file_path] = Array.new(@runtime_count, 'na') unless @runtimes[file_path]
-          @runtimes[file_path].unshift (runtime * 1_000).to_i  # msec
+          @runtimes[file_path].unshift (runtime * 1_000).to_i # msec
         end
       end
 
       def start_dump
         File.open(@filename, 'wb') do |io|
           @runtimes.keys.sort.each do |filename|
-            runtimes = @runtimes[filename].take(max_record_count)
-            io.puts [filename, *runtimes].join("\t")
+            runtimes = @runtimes[filename]
+            runtimes.unshift 'na' if runtimes.size == @runtime_count
+            runtimes = runtimes.take(max_record_count)
+            next if runtimes.all? {|runtime| runtime == 'na' }
+
+            io.puts [filename, *runtimes.take(max_record_count)].join("\t")
           end
         end
       end
@@ -72,7 +76,9 @@ module RSpec
 
         File.read(@filename, mode: 'rb').each_line do |line|
           filename, *runtimes = line.strip.split(/\t/)
-          @runtimes[filename] = runtimes.map(&:to_i)
+          @runtimes[filename] = runtimes.map do |runtime|
+            runtime == 'na' ? 'na' : runtime.to_i
+          end
         end
         @runtime_count = @runtimes.each_value.first.size
       end
