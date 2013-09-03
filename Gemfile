@@ -9,3 +9,5 @@ group :test do
 
   gem 'timecop'
 end
+
+gem 'coveralls', require: false
