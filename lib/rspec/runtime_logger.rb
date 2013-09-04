@@ -58,7 +58,7 @@ module RSpec
       end
 
       def start_dump
-        File.open(@filename, 'wb') do |io|
+        File.open(filename, 'wb') do |io|
           (@runtimes.keys | @existing_runtimes.keys).sort.each do |filename|
             runtime = @runtimes[filename]
 
@@ -73,10 +73,14 @@ module RSpec
 
       private
 
-      def load_existing_runtime_log
-        return unless File.file? @filename
+      def filename
+        @filename
+      end
 
-        File.read(@filename, mode: 'rb').each_line do |line|
+      def load_existing_runtime_log
+        return unless File.file? filename
+
+        File.read(filename, mode: 'rb').each_line do |line|
           filename, *runtimes = line.strip.split(/\t/)
           @existing_runtimes[filename] = runtimes.map do |runtime|
             runtime == 'na' ? 'na' : runtime.to_i
