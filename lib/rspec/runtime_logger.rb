@@ -17,12 +17,7 @@ module RSpec
       DEFAULT_FILENAME = 'spec_runtime_log.tsv'.freeze
 
       def initialize(output)
-        if String === output
-          @filename = output
-          output = StringIO.new
-        else
-          @filename = DEFAULT_FILENAME
-        end
+        @filename = ENV['SPEC_RUNTIME_LOG'] || DEFAULT_FILENAME
         super
       end
 
