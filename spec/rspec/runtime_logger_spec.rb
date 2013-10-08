@@ -165,14 +165,16 @@ describe RSpec::RuntimeLogger::Formatter do
   end
 
   context 'when SPEC_RUNTIME_LOG environment variable is given' do
-    before do
-      ENV['SPEC_RUNTIME_LOG'] = 'specified_log_file.tsv'
-      formatter.start(2)
-    end
+    context 'when there is not the directory in which the specified file is' do
+      before do
+        ENV['SPEC_RUNTIME_LOG'] = 'foo/bar/specified_log_file.tsv'
+        formatter.start(2)
+      end
 
-    it 'creates "spec_runtime_log.tsv" in the current directory' do
-      formatter.start_dump
-      expect(Pathname('specified_log_file.tsv')).to be_file
+      it 'creates the specified file in the specified directory' do
+        formatter.start_dump
+        expect(Pathname('foo/bar/specified_log_file.tsv')).to be_file
+      end
     end
   end
 end

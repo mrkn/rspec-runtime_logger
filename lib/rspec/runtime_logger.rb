@@ -1,3 +1,5 @@
+require "fileutils"
+
 require "rspec/runtime_logger/version"
 require "rspec/core/formatters/base_formatter"
 
@@ -53,6 +55,7 @@ module RSpec
       end
 
       def start_dump
+        FileUtils.mkdir_p File.dirname(filename)
         File.open(filename, 'wb') do |io|
           (@runtimes.keys | @existing_runtimes.keys).sort.each do |filename|
             runtime = @runtimes[filename]
